@@ -1,19 +1,19 @@
 name: Deploy Express to OCI
-
 on:
   push:
     branches:
       - master
 
 jobs:
+  # build:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
           username: dockeradmin
@@ -21,4 +21,41 @@ jobs:
           script: |
             cd /home/dockeradmin/git-actions
             git pull
+            docker-compose up -d --build
+
+
+
+===============  Coopilot ===========
+name: Deploy Express to OCI
+
+on:
+  push:
+    branches:
+      - master
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to OCI via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          # port: ${{ secrets.SSH_PORT }}
+          port: 22
+          script: |
+            set -e
+            cd /home/${{ secrets.SSH_USERNAME }}/git-actions
+            git fetch origin
+            git checkout ${{ github.ref_name }}
+            git pull origin ${{ github.ref_name }}
             docker compose up -d --build
+
+          
