@@ -8,13 +8,12 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.SSH_HOST }}
           username: dockeradmin
@@ -22,4 +21,4 @@ jobs:
           script: |
             cd /home/dockeradmin/git-actions
             git pull
-            docker-compose up -d --build
+            docker compose up -d --build
